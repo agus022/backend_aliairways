@@ -1,10 +1,13 @@
 import express from 'express';
 import pool from './libs/db_connection.js';
 
+const PORT = process.env.PORT || 3000;
+const API_PREFIX = process.env.API_PREFIX;
+
 const app = express();
 app.use(express.json());
 
-app.get('/api/test', async (req, res) => {
+app.get(`${API_PREFIX}/test`, async (req, res) => {
   try {
     const result = await pool.query('SELECT NOW()');
     res.json({ time: result.rows[0].now });
@@ -15,5 +18,5 @@ app.get('/api/test', async (req, res) => {
 });
 
 app.listen(3000, () => {
-  console.log('Servidor local en http://localhost:3000');
+    console.log(`Server is running on http://localhost:${PORT}${API_PREFIX}`);
 });
