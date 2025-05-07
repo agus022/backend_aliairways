@@ -5,6 +5,7 @@ import flight from './routers/flight.js';
 import aircraft from './routers/aircraft.js';
 import emailRoutes from './routers/emailRoutes.js';
 import employeeRoutes from './routers/employee.route.js';
+import jobRoutes from './routers/jobRoute.js'
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -28,6 +29,7 @@ app.use(`${API_PREFIX}/employees`,employeeRoutes);
 app.use(`${API_PREFIX}/flights`, flight);
 app.use(`${API_PREFIX}/aircrafts`, aircraft);
 app.use(`${API_PREFIX}/emails`, emailRoutes);
+app.use(`${API_PREFIX}/jobs`, jobRoutes)
 
 app.listen(3000, () => {
     console.log(`Server is running on http://localhost:${PORT}${API_PREFIX}`);

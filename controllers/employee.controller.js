@@ -1,18 +1,33 @@
 import pool from '../libs/db_connection.js';
 
 export const getEmployees = async (req,res) =>{
-    const result = await pool.query('SELECT * FROM employee');
-    res.json(result.rows);
+    try {
+        const result = await pool.query('SELECT * FROM employee');
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error en la consulta');
+    }
+
 };
 
 export const getEmployeeById = async (req, res) =>{
-    const { id } = req.params;
-    const result = await pool.query('SELECT * FROM employee WHERE employee_id = $1', [id]);
-    res.json(result.rows[0]);
+
+    try {
+        const { id } = req.params;
+        const result = await pool.query('SELECT * FROM employee WHERE employee_id = $1', [id]);
+        res.json(result.rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error en la consulta');
+    }
+
 };
 
 export const addEmployee = async (req,res) =>{
-    const {job_id,shift_id,first_name,last_name_maternal,last_name_paternal,passport,curp,rfc,birth_date,user_id} = req.body;
+
+    try {
+        const {job_id,shift_id,first_name,last_name_maternal,last_name_paternal,passport,curp,rfc,birth_date,user_id} = req.body;
 
     await pool.query(
        `INSERT INTO employee (
@@ -21,10 +36,16 @@ export const addEmployee = async (req,res) =>{
         [job_id, shift_id, first_name, last_name_maternal, last_name_paternal, passport, curp, rfc, birth_date, user_id]
     );
 
-    res.status(201).json({ message: 'Create Employee Successfully' });
+    res.status(201).json({ message:'Empleado creado correctamente' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error en la consulta');
+    }
+    
 }
 
 export const updateEmployee = async (req, res) =>{
+    try {
     const {id} = req.params;
     const {job_id,shift_id,first_name,last_name_maternal,last_name_paternal,passport,curp,rfc,birth_date,user_id} = req.body;
 
@@ -37,11 +58,22 @@ export const updateEmployee = async (req, res) =>{
         [job_id, shift_id, first_name, last_name_maternal, last_name_paternal, passport, curp, rfc, birth_date, user_id, id]
     
     );
-    res.json({message: 'Update Employee Successfully'});
+    res.json({message: 'Empleado actualizado correctamente'});
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error en la consulta');
+    }
+    
 };
 
 export const deleteEmployee = async (req, res) => {
-    const { id } = req.params;
-    await pool.query(`DELETE FROM employee WHERE employee_id = $1`, [id]);
-    res.json({ message: 'Delete Employeee Successfully' });
+    try {
+        const { id } = req.params;
+        await pool.query(`DELETE FROM employee WHERE employee_id = $1`, [id]);
+        res.json({ message: 'Empleado eliminado correctamente' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error en la consulta');
+    }
+   
 };
