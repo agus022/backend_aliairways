@@ -1,7 +1,9 @@
 import express from 'express';
 import dotenv from "dotenv"
 import pool from './libs/db_connection.js';
-
+import flight from './routes/flight.js';
+import aircraft from './routes/aircraft.js';
+import emailRoutes from './routes/emailRoutes.js';
 import employeeRoutes from './routers/employee.route.js';
 
 dotenv.config();
@@ -23,8 +25,9 @@ app.get(`${API_PREFIX}/test`, async (req, res) => {
 });
 
 app.use(`${API_PREFIX}/employees`,employeeRoutes);
-
-
+app.use(`${API_PREFIX}/flights`, flight);
+app.use(`${API_PREFIX}/aircrafts`, aircraft);
+app.use(`${API_PREFIX}/emails`, emailRoutes);
 
 app.listen(3000, () => {
     console.log(`Server is running on http://localhost:${PORT}${API_PREFIX}`);
