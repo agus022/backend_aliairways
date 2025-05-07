@@ -1,9 +1,9 @@
 import express from 'express';
 import dotenv from "dotenv"
 import pool from './libs/db_connection.js';
-import flight from './routes/flight.js';
-import aircraft from './routes/aircraft.js';
-import emailRoutes from './routes/emailRoutes.js';
+import flight from './routers/flight.js';
+import aircraft from './routers/aircraft.js';
+import emailRoutes from './routers/emailRoutes.js';
 import employeeRoutes from './routers/employee.route.js';
 
 dotenv.config();
