@@ -8,6 +8,7 @@ import userRoutes from './routers/userRoutes.js';
 import employeeRoutes from './routers/employee.route.js';
 import jobRoutes from './routers/jobRoute.js'
 import authJwt from './libs/jwt.js';
+import shiftRoutes from './routers/shiftRoute.js'
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -32,7 +33,8 @@ app.use(`${API_PREFIX}/employees`,employeeRoutes);
 app.use(`${API_PREFIX}/flights`, flightRoutes);
 app.use(`${API_PREFIX}/aircrafts`, aircraftRoutes);
 app.use(`${API_PREFIX}/emails`, emailRoutes);
-app.use(`${API_PREFIX}/jobs`, jobRoutes)
+app.use(`${API_PREFIX}/jobs`, jobRoutes);
+app.use(`${API_PREFIX}/shifts`, shiftRoutes);
 
 app.listen(3000, () => {
     console.log(`Server is running on http://localhost:${PORT}${API_PREFIX}`);

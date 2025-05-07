@@ -14,7 +14,8 @@ export const createShift = async (req, res) =>{
     try {
         const {start_time,end_time,shift_desc} =req.body;
         await pool.query(
-            `INSERT INTO shift (start_time,end_time,shift_desc) VALUES($1,$2,$3)`
+            `INSERT INTO shift (start_time,end_time,shift_desc) VALUES($1,$2,$3)`,
+            [start_time, end_time, shift_desc]
         );
 
         res.status(201).json({ message:'Turno creado correctamente' });
@@ -31,8 +32,8 @@ export const updateShift = async (req, res) => {
       const { start_time, end_time, shift_desc} = req.body;
   
       await pool.query(
-        'UPDATE shift SET start_time = $1, end_time = $2, shift_desc = $3 WHERE job_id = $4',
-        [title, salary, id]
+        'UPDATE shift SET start_time = $1, end_time = $2, shift_desc = $3 WHERE shift_id = $4',
+        [start_time, end_time,shift_desc, id]
       );
   
       res.json({ message: 'Trabajo actualizado correctamente' });
@@ -43,54 +44,52 @@ export const updateShift = async (req, res) => {
 };
 
 
-export const deleteJobs = async (req, res) => {
+export const deleteShift = async (req, res) => {
     try {
       const { id } = req.params;
   
-      await pool.query('DELETE FROM job WHERE job_id = $1', [id]);
+      await pool.query('DELETE FROM shift WHERE shift_id = $1', [id]);
   
-      res.json({ message: 'Trabajo eliminado correctamente' });
+      res.json({ message: 'Turno eliminado correctamente' });
     } catch (error) {
       console.error(error);
       res.status(500).send('Error al eliminar el trabajo');
     }
 };
 
-export const getJobById = async (req, res) => {
+export const getShiftById = async (req, res) => {
     try {
       const { id } = req.params;
   
-      const result = await pool.query('SELECT * FROM job WHERE job_id = $1', [id]);
+      const result = await pool.query('SELECT * FROM shift WHERE shift_id = $1', [id]);
   
       if (result.rows.length === 0) {
-        return res.status(404).json({ message: 'Trabajo no encontrado' });
+        return res.status(404).json({ message: 'Turno no encontrado' });
       }
   
       res.json(result.rows[0]);
     } catch (error) {
       console.error(error);
-      res.status(500).send('Error al obtener el trabajo');
+      res.status(500).send('Error al obtener el turno');
     }
 };
 
 
-export const getJobsWithEmployees = async (req, res) => {
+export const getShiftsByDesc = async (req, res) => {
     try {
-      const result = await pool.query(`
-        SELECT j.job_id, j.title, COUNT(e.employee_id) AS total_employees
-        FROM job j
-        LEFT JOIN employee e ON j.job_id = e.job_id
-        GROUP BY j.job_id, j.title
-        ORDER BY total_employees DESC
-      `);
+      const { desc } = req.params;
+  
+      const result = await pool.query(
+        'SELECT * FROM shift WHERE LOWER(shift_desc) LIKE LOWER($1)',
+        [`%${desc}%`]
+      );
   
       res.json(result.rows);
     } catch (error) {
       console.error(error);
-      res.status(500).send('Error al obtener trabajos con empleados');
+      res.status(500).send('Error al buscar turnos');
     }
-};
-  
+  };
   
   
   

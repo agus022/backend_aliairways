@@ -14,7 +14,8 @@ export const createJobs = async (req, res) =>{
     try {
         const {title,salary} =req.body;
         await pool.query(
-            `INSERT INTO job (title,salary) VALUES($1,$2)`
+            `INSERT INTO job (title,salary) VALUES($1,$2)`,
+            [title,salary]
         );
 
         res.status(201).json({ message:'Trabajo creado correctamente' });
