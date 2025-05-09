@@ -11,6 +11,7 @@ import authJwt from './libs/jwt.js';
 import shiftRoutes from './routers/shiftRoute.js';
 import roleRoutes from './routers/roleRoute.js';
 import luggageRoutes from './routers/luggageRoutes.js';
+import passengerRoutes from './routers/passengerRoutes.js';
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -31,7 +32,7 @@ app.use(`${API_PREFIX}/shifts`, shiftRoutes);
 app.use(`${API_PREFIX}/seats`, seatRoutes);
 app.use(`${API_PREFIX}/roles`, roleRoutes);
 app.use(`${API_PREFIX}/luggages`, luggageRoutes);
-
+app.use(`${API_PREFIX}/passengers`, passengerRoutes);
 
 
 app.listen(3000, () => {
