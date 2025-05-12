@@ -10,7 +10,7 @@ function authJwt() {
         isRevoked: isRevoked
     }).unless({
         path: [
-            { url: /\/api\/v1\/(.*)/, methods: ['GET','DELETE','POST','PUT', 'OPTIONS'] },
+            { url: /\/api\/v1\/(.*)/, methods: ['GET'] },
             `${api}/users/login`,
             `${api}/users/register`
         ]
@@ -19,7 +19,7 @@ function authJwt() {
 
 async function isRevoked(req, token) {
     if (!token.payload.isAdmin) {
-        return true; // Revoca el token si no es admin
+        return false; // Revoca el token si no es admin
     }
 }
 
