@@ -1,6 +1,6 @@
 import express from 'express';
 import * as roleController from '../controllers/roleController.js';
-
+import { checkRole }  from '../middlewares/checkRole.js';
 const router = express.Router();
 
 router.get('/',roleController.getRoles);
