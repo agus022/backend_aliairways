@@ -70,3 +70,14 @@ export const login = async (req, res) => {
         res.status(500).send('Error al autenticar');
     }
 };
+
+
+export const getUsers = async (req,res) =>{
+    try {
+        const result = await pool.query('SELECT * FROM user_airways');
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error en la consulta');
+    }
+};

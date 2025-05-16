@@ -68,3 +68,69 @@ export const deleteSeat = async (req, res) => {
         res.status(500).send('Error en la consulta');
     }
 }
+
+//obtener todos los asientos por avion
+export const getSeatsByAircraft = async (req, res) => {
+  try {
+    const { aircraft_id } = req.params;
+    const result = await pool.query(
+      'SELECT * FROM seat WHERE aircraft_id = $1 ORDER BY seat_id',
+      [aircraft_id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al obtener los asientos de la aeronave');
+  }
+};
+
+
+//obtener asientos libres por avion 
+export const getAvailableSeats = async (req, res) => {
+  try {
+    const { aircraft_id } = req.params;
+    const result = await pool.query(
+      'SELECT * FROM seat WHERE aircraft_id = $1 AND available = TRUE',
+      [aircraft_id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al obtener los asientos disponibles');
+  }
+};
+
+//contar asientos ocupados y asientos libres por avion , talvez se pueda separar en dos metodos para obtener libres y otro para obtener ocupados 
+export const getSeatAvailabilityStats = async (req, res) => {
+  try {
+    const { aircraft_id } = req.params;
+    const result = await pool.query(`
+      SELECT
+        COUNT(*) FILTER (WHERE available = TRUE) AS available,
+        COUNT(*) FILTER (WHERE available = FALSE) AS occupied
+      FROM seat
+      WHERE aircraft_id = $1
+    `, [aircraft_id]);
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al obtener estadísticas de asientos');
+  }
+};
+
+//filtrar asientos por clase 
+export const getSeatsByClass = async (req, res) => {
+  try {
+    const { aircraft_id, seat_class } = req.params;
+    const result = await pool.query(
+      'SELECT * FROM seat WHERE aircraft_id = $1 AND class = $2',
+      [aircraft_id, seat_class]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al obtener los asientos por clase');
+  }
+};
+
+
