@@ -77,3 +77,15 @@ export const deleteEmployee = async (req, res) => {
     }
    
 };
+
+// obtener trabajadores por su area de trabajo 
+export const getEmployeesByJob = async (req, res) => {
+    try {
+        const { job_id } = req.params;
+        const result = await pool.query('SELECT * FROM employee WHERE job_id = $1', [job_id]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener empleados por puesto');
+    }
+};

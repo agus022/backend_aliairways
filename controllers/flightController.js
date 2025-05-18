@@ -134,3 +134,21 @@ export const deleteFlight=async (req, res) => {
         res.status(500).send('Error al eliminar el vuelo');
     }
 }
+
+
+// obtener vuelos por status
+export const getFlightsByStatus = async (req, res) => {
+    try {
+        const { status } = req.params;
+        const result = await pool.query(
+            'SELECT * FROM flight WHERE LOWER(status) = LOWER($1)',
+            [status]
+        );
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al obtener vuelos por estado');
+    }
+};
+
+

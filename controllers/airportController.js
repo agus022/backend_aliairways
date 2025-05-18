@@ -88,7 +88,7 @@ export const getAirportByCode = async (req, res) => {
   }
 };
 
-
+// obtener los aeropuertos por ciudad 
 export const getAirportsByCity = async (req, res) => {
   try {
     const { city } = req.params;
@@ -102,7 +102,7 @@ export const getAirportsByCity = async (req, res) => {
 };
 
 
-//se puede usar para el dashboard 
+//se puede usar para el dashboard , conteo de aeropuertos por ciudad 
 export const getAirportCountByCity = async (req, res) => {
   try {
     const result = await pool.query(

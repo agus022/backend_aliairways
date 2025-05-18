@@ -25,7 +25,7 @@ export const addPassenger = async (req, res) => {
 
         await pool.query(
             `INSERT INTO passenger (
-                first_name, last_name_maternal, last_name_paternal, birth_date, passport, phone, email, accumulated_flights, frecuent_flyer, user_id,
+                first_name, last_name_maternal, last_name_paternal, birth_date, passport, phone, email, accumulated_flights, frecuent_flyer, user_id
             ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
             [first_name, last_name_maternal, last_name_paternal, birth_date, passport, phone, email, accumulated_flights, frecuent_flyer, user_id]
 
@@ -68,3 +68,21 @@ export const updatePassenger = async (req, res) => {
         res.status(500).send('Error en la consulta');
     }
 }
+
+// buscar cliente por nombre o pasaporte 
+export const searchPassengers = async (req, res) => {
+    try {
+        const { search } = req.query;
+        const result = await pool.query(`
+            SELECT * FROM passenger 
+            WHERE LOWER(first_name) LIKE LOWER($1) 
+               OR LOWER(last_name_paternal) LIKE LOWER($1) 
+               OR LOWER(passport) LIKE LOWER($1)
+        `, [`%${search}%`]);
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error al buscar pasajeros');
+    }
+};
