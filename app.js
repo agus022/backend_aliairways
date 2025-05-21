@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from "dotenv"
+import { initializeData } from './config/initData.js';
 import seatRoutes from './routers/seatRoutes.js';
 import flightRoutes from './routers/flight.js';
 import aircraftRoutes from './routers/aircraft.js';
@@ -23,6 +24,7 @@ const API_PREFIX = process.env.API_PREFIX;
 const app = express();
 app.use(authJwt());
 app.use(express.json());
+initializeData();
 
 
 app.use(`${API_PREFIX}/users`, userRoutes);
