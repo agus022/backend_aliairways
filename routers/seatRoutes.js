@@ -9,11 +9,11 @@ router.get('/stats/:aircraft_id', seatController.getSeatAvailabilityStats);
 router.get('/class/:aircraft_id/:seat_class', seatController.getSeatsByClass);
 
 
-router.get('/',checkRole(['admin'],['emmployee'],['user']),seatController.getSeats);
-router.post('/',checkRole(['admin'],['emmployee'],['user']),seatController.addSeat);
-router.put('/:aircraf_id/:id',checkRole(['admin'],['emmployee'],['user']),seatController.updateSeat);
-router.delete('/:aircraf_id/:id',checkRole(['admin'],['emmployee'],['user']),seatController.deleteSeat);
-router.get('/:aircraf_id/:id',checkRole(['admin'],['emmployee'],['user']),seatController.getSeatById);
+router.get('/',checkRole(['administrator'],['emmployee'],['passenger']),seatController.getSeats);
+router.post('/',checkRole(['administrator'],['emmployee'],['passenger']),seatController.addSeat);
+router.put('/:aircraf_id/:id',checkRole(['administrator'],['emmployee'],['passenger']),seatController.updateSeat);
+router.delete('/:aircraf_id/:id',checkRole(['administrator'],['emmployee'],['passenger']),seatController.deleteSeat);
+router.get('/:aircraf_id/:id',checkRole(['administrator'],['emmployee'],['passenger']),seatController.getSeatById);
 
 
 
