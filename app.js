@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from "dotenv"
 import { initializeData } from './config/initData.js';
+import cors from 'cors';
 import seatRoutes from './routers/seatRoutes.js';
 import flightRoutes from './routers/flight.js';
 import aircraftRoutes from './routers/aircraft.js';
@@ -22,6 +23,13 @@ const PORT = process.env.PORT || 3000;
 const API_PREFIX = process.env.API_PREFIX;
 
 const app = express();
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'], 
+    credentials: true,
+}));
+
 app.use(authJwt());
 app.use(express.json());
 initializeData();
