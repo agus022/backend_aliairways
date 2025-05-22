@@ -1,7 +1,6 @@
 import express from 'express';
 import dotenv from "dotenv"
 import { initializeData } from './config/initData.js';
-import cors from 'cors';
 import seatRoutes from './routers/seatRoutes.js';
 import flightRoutes from './routers/flight.js';
 import aircraftRoutes from './routers/aircraft.js';
