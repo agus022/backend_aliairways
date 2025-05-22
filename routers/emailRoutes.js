@@ -4,6 +4,6 @@ import { checkRole }  from '../middlewares/checkRole.js';
 
 const router = Router();
 
-router.post('/send',checkRole(['admin']), sendEmail);
+router.post('/send',checkRole(['administrator']), sendEmail);
 
 export default router;

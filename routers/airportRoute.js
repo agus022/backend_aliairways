@@ -10,8 +10,8 @@ router.get('/:id',airportController.getAirportById);
 router.get('/code/:code',airportController.getAirportByCode);
 router.get('/city/:city',airportController.getAirportsByCity);
 router.get('/count/by-city',airportController.getAirportCountByCity);
-router.post('/',checkRole(['admin']),airportController.createAirport);
-router.put('/:id',checkRole(['admin']),airportController.updateAirport);
-router.delete('/:id',checkRole(['admin']),airportController.deleteAirport);
+router.post('/',checkRole(['administrator']),airportController.createAirport);
+router.put('/:id',checkRole(['administrator']),airportController.updateAirport);
+router.delete('/:id',checkRole(['administrator']),airportController.deleteAirport);
 
 export default router;

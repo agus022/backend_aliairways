@@ -1,5 +1,50 @@
 import pool from '../libs/db_connection.js';
 
+export const getFlightFull=async (req,res) =>{
+    const { origin, destination, departureDate } = req.query
+ try{
+    const result= await pool.query(
+        `
+        SELECT
+            f.flight_id AS id,
+            'Ali Airways' AS airline,
+            '/images/logo/logo-2.svg' AS airlineLogo,
+            CONCAT('AA', f.flight_id) AS flightNumber,
+            TO_CHAR(f.departure_date + f.departure_time, 'YYYY-MM-DD"T"HH24:MI:SS') AS departureTime,
+            TO_CHAR(f.arrival_date + f.arrival_time, 'YYYY-MM-DD"T"HH24:MI:SS') AS arrivalTime,
+            ao.code AS departureAirport,
+            ad.code AS arrivalAirport,
+            ao.city AS departureCity,
+            ad.city AS arrivalCity,
+            f.cost AS price,
+            300 AS taxes,
+            'MXN' AS currency,
+            EXTRACT(EPOCH FROM ((f.arrival_date + f.arrival_time) - (f.departure_date + f.departure_time))) / 60 AS durationMinutes,
+            CASE
+            WHEN f.location ILIKE '%direct%' THEN 0
+            WHEN f.location ILIKE '%1 escala%' THEN 1
+            ELSE 1
+            END AS stops,
+            ac.model AS aircraft,
+            ac.capacity - (
+            SELECT COUNT(*)
+            FROM reservation r
+            WHERE r.flight_id = f.flight_id
+            ) AS availableSeats
+        FROM flight f
+        JOIN airport ao ON f.origin_id = ao.airport_id
+        JOIN airport ad ON f.destination_id = ad.airport_id
+        JOIN aircraft ac ON f.aircraft_id = ac.aircraft_id
+        WHERE ao.city = $1 AND ad.city = $2 AND f.departure_date = $3;
+        `,
+    [origin, destination,departureDate]
+    );
+    res.json(result.rows);
+}catch(error){
+    console.error(error);
+    res.status(500).send('Error en la cosunta');
+}
+}
 export const getAllFlights = async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM flight');

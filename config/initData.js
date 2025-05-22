@@ -20,7 +20,7 @@ export const initializeData = async () => {
       );
       if (result.rows.length === 0) {
         await pool.query('INSERT INTO role(name) VALUES ($1)', [roleName]);
-        console.log(`✅ Rol "${roleName}" creado.`);
+        console.log(`🟢 Rol "${roleName}" creado.`);
       } else {
         console.log(`🔹 Rol "${roleName}" ya existe.`);
       }
@@ -46,13 +46,13 @@ export const initializeData = async () => {
           'INSERT INTO user_airways (username, password,email,phone, role_id, photo) VALUES ($1, $2, $3, $4, $5, $6)',
           [user.username, hashedPassword,user.email,user.phone, rolesMap[user.role],user.photo]
         );
-        console.log(`✅ Usuario "${user.username}" creado con rol "${user.role}".`);
+        console.log(`🟢 Usuario "${user.username}" creado con rol "${user.role}".`);
       } else {
         console.log(`🔹 Usuario "${user.username}" ya existe.`);
       }
     }
 
   } catch (error) {
-    console.error('❌ Error al inicializar datos:', error.message);
+    console.error('⚠️ Error al inicializar datos:', error.message);
   }
 };

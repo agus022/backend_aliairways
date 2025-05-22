@@ -7,10 +7,10 @@ const router = express.Router();
 
 router.get('/',getEmployees);
 router.get('/:job_id',getEmployeesByJob);
-router.get('/:id',checkRole(['admin'],['employee']),getEmployeeById);
-router.post('/',checkRole(['admin']),addEmployee);
-router.put('/:id',checkRole(['admin']),updateEmployee);
-router.delete('/:id',checkRole(['admin']),deleteEmployee);
+router.get('/:id',checkRole(['administrator'],['employee']),getEmployeeById);
+router.post('/',checkRole(['administrator']),addEmployee);
+router.put('/:id',checkRole(['administrator']),updateEmployee);
+router.delete('/:id',checkRole(['administrator']),deleteEmployee);
 
 
 export default router;
