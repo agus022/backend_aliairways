@@ -4,6 +4,7 @@ import { checkRole }  from '../middlewares/checkRole.js';
 
 
 const router=Router();
+router.get('/search/flights',flightController.getFlightFull);
 router.get('/',flightController.getAllFlights);
 router.get('/search/:origin/:destination/:date', flightController.getFlightByOriginAndDestinationAndDate);
 router.get('/search/:origin/:destination', flightController.getFlightByOriginAndDestination);

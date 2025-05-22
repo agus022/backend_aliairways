@@ -15,6 +15,7 @@ import luggageRoutes from './routers/luggageRoutes.js';
 import passengerRoutes from './routers/passengerRoutes.js';
 import airportRoutes from './routers/airportRoute.js';
 import paymentsRoutes from './routers/paymentRoute.js'
+import cors from 'cors';
 
 
 dotenv.config();
@@ -22,8 +23,22 @@ const PORT = process.env.PORT || 3000;
 const API_PREFIX = process.env.API_PREFIX;
 
 const app = express();
+const allowedOrigins = ['http://localhost:3001'];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // permitir peticiones sin origen (ej: Postman)
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Origen no permitido por CORS'));
+    }
+  },
+  credentials: true,
+}));
 app.use(authJwt());
 app.use(express.json());
+
 initializeData();
 
 
