@@ -29,15 +29,15 @@ export const register = async (req, res) => {
 
 //LOGIN DE USUARIO
 export const login = async (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     try {
         const result = await pool.query(`
             SELECT u.user_id, u.username, u.password, r.name AS role
             FROM user_airways u
             JOIN role r ON u.role_id = r.role_id
-            WHERE u.username = $1
-        `, [username]);
+            WHERE u.email = $1
+        `, [email]);
 
         if (result.rows.length === 0) {
             return res.status(401).send('Usuario no encontrado');
