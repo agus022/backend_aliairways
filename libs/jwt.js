@@ -11,6 +11,7 @@ function authJwt() {
     }).unless({
         path: [
             { url: /\/api\/v1\/flights\/(.*)/, methods: ['GET'] },
+            `${api}/airports`,
             `${api}/users/login`,
             `${api}/users/register`
         ]

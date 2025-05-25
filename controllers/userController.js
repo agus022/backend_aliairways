@@ -81,3 +81,33 @@ export const getUsers = async (req,res) =>{
         res.status(500).send('Error en la consulta');
     }
 };
+export const getProfile =async (req,res)=>{
+     
+    try {
+        const { id } = req.params;
+        const result = await pool.query(`SELECT
+  u.user_id,
+  u.username,
+  u.email AS user_email,
+  u.phone AS user_phone,
+  u.role_id,
+  p.passenger_id,
+  p.first_name,
+  p.last_name_paternal,
+  p.last_name_maternal,
+  p.birth_date,
+  p.passport,
+  p.phone AS passenger_phone,
+  p.email AS passenger_email,
+  p.accumulated_flights,
+  p.frequent_flyer
+FROM
+  user_airways u
+JOIN
+  passenger p ON u.user_id =$1`,[id]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error en la consulta');
+    }
+}
