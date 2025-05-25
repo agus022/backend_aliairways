@@ -57,7 +57,7 @@ export const updatePassenger = async (req, res) => {
             `UPDATE passenger SET
                 first_name = $1, last_name_maternal = $2, last_name_paternal = $3,
                 birth_date = $4, passport = $5, phone = $6, email = $7,
-                accumulated_flights = $8, frecuent_flyer = $9, user_id = $10
+                accumulated_flights = $8, frequent_flyer = $9, user_id = $10
             WHERE passenger_id = $11`,
             [first_name, last_name_maternal, last_name_paternal, birth_date, passport, phone, email, accumulated_flights, frecuent_flyer, user_id,id]
         );
