@@ -9,7 +9,7 @@ router.get('/:id', checkRole(['administrator','passenger']),paymentController.ge
 router.post('/',checkRole(['administrator','passenger']), paymentController.createPayment);
 router.put('/:id',checkRole(['administrator']),paymentController.updatePayment);
 router.delete('/:id', checkRole(['administrator']),paymentController.deletePayment);
-router.get('/status/:status',checkRole(['administrator',['passenger']]),paymentController.getPaymentsByStatus);
+router.get('/status/:status',checkRole(['administrator','passenger']),paymentController.getPaymentsByStatus);
 router.get('/count/total',checkRole(['administrator','passenger']),paymentController.getTotalTransactionAmount);
 
 export default router;

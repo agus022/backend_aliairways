@@ -10,4 +10,6 @@ router.get('/:name_passport',checkRole(['administrator','employee']),passengerCo
 router.post('/',checkRole(['administrator','passenger','employee']),passengerController.addPassenger);
 router.put('/:id',checkRole(['administrator','passenger']),passengerController.updatePassenger);
 router.delete('/:id',checkRole(['administrator','passenger','employee']),passengerController.deletePasanger);
+router.get('/historial/:id',checkRole(['passenger']),passengerController.getHistorial);
+router.get('/historialFlights/:id',checkRole(['passenger']),passengerController.getFlights);
 export default router;
