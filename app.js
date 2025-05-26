@@ -15,6 +15,7 @@ import luggageRoutes from './routers/luggageRoutes.js';
 import passengerRoutes from './routers/passengerRoutes.js';
 import airportRoutes from './routers/airportRoute.js';
 import paymentsRoutes from './routers/paymentRoute.js'
+import checkInRoutes from './routers/checkinRoute.js';
 import cors from 'cors';
 
 
@@ -58,6 +59,7 @@ app.use(`${API_PREFIX}/luggages`, luggageRoutes);
 app.use(`${API_PREFIX}/passengers`, passengerRoutes);
 app.use(`${API_PREFIX}/airports`, airportRoutes);
 app.use(`${API_PREFIX}/payments`, paymentsRoutes);
+app.use(`${API_PREFIX}/checkins`,checkInRoutes);
 
 
 app.listen(3000, () => {
