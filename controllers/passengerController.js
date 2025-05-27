@@ -142,3 +142,137 @@ WHERE u.user_id = $1;  `,[id]);
     }
 
 }
+
+
+// Obtener estadísticas de pasajeros 
+export const getPassengerStats = async (req, res) => {
+  const { range } = req.query;
+
+  let currentStart = "CURRENT_DATE";
+  let previousStart = "CURRENT_DATE - INTERVAL '1 day'";
+  let previousEnd = "CURRENT_DATE";
+
+  if (range === 'week') {
+    currentStart = "CURRENT_DATE - INTERVAL '7 days'";
+    previousStart = "CURRENT_DATE - INTERVAL '14 days'";
+    previousEnd = "CURRENT_DATE - INTERVAL '7 days'";
+  } else if (range === 'month') {
+    currentStart = "CURRENT_DATE - INTERVAL '1 month'";
+    previousStart = "CURRENT_DATE - INTERVAL '2 months'";
+    previousEnd = "CURRENT_DATE - INTERVAL '1 month'";
+  }
+
+  try {
+    // Pasajeros transportados actualmente
+    const currentPassengers = await pool.query(`
+      SELECT COUNT(*)::int AS total
+      FROM reservation r
+      JOIN flight f ON r.flight_id = f.flight_id
+      WHERE f.departure_date >= ${currentStart}
+    `);
+
+    const previousPassengers = await pool.query(`
+      SELECT COUNT(*)::int AS total
+      FROM reservation r
+      JOIN flight f ON r.flight_id = f.flight_id
+      WHERE f.departure_date >= ${previousStart}
+        AND f.departure_date < ${previousEnd}
+    `);
+
+    // Factor de carga actual
+    const loadFactorCurrent = await pool.query(`
+      SELECT 
+        SUM(1)::int AS seats_reserved,
+        SUM(ac.capacity)::int AS total_seats
+      FROM reservation r
+      JOIN flight f ON r.flight_id = f.flight_id
+      JOIN aircraft ac ON f.aircraft_id = ac.aircraft_id
+      WHERE f.departure_date >= ${currentStart}
+    `);
+
+    const loadFactorPrevious = await pool.query(`
+      SELECT 
+        SUM(1)::int AS seats_reserved,
+        SUM(ac.capacity)::int AS total_seats
+      FROM reservation r
+      JOIN flight f ON r.flight_id = f.flight_id
+      JOIN aircraft ac ON f.aircraft_id = ac.aircraft_id
+      WHERE f.departure_date >= ${previousStart}
+        AND f.departure_date < ${previousEnd}
+    `);
+
+    const totalCurrent = currentPassengers.rows[0].total || 1;
+    const totalPrevious = previousPassengers.rows[0].total || 1;
+
+    const seatsCurrent = loadFactorCurrent.rows[0];
+    const seatsPrevious = loadFactorPrevious.rows[0];
+
+    const currentFactor = seatsCurrent.total_seats
+      ? (seatsCurrent.seats_reserved / seatsCurrent.total_seats) * 100
+      : 0;
+
+    const previousFactor = seatsPrevious.total_seats
+      ? (seatsPrevious.seats_reserved / seatsPrevious.total_seats) * 100
+      : 0;
+
+    res.json({
+      passenger_count: totalCurrent,
+      passenger_growth_pct: Math.round(((totalCurrent - totalPrevious) / totalPrevious) * 100),
+      avg_load_factor: Number(currentFactor.toFixed(1)),
+      load_factor_growth_pct: Math.round(currentFactor - previousFactor)
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al calcular estadísticas de pasajeros');
+  }
+};
+
+//obtener los pasaje mediante clases de asiento al que pertenece
+export const getPassengerCountByClass = async (req, res) => {
+  const { range } = req.query;
+
+  let startDate = "CURRENT_DATE";
+  if (range === "week") startDate = "CURRENT_DATE - INTERVAL '7 days'";
+  else if (range === "month") startDate = "CURRENT_DATE - INTERVAL '1 month'";
+
+  try {
+    const result = await pool.query(`
+      SELECT s.class, COUNT(*) AS count
+      FROM reservation r
+      JOIN flight f ON r.flight_id = f.flight_id
+      JOIN seat s ON r.seat_id = s.seat_id AND f.aircraft_id = s.aircraft_id
+      WHERE f.departure_date >= ${startDate}
+      GROUP BY s.class
+    `);
+
+    const response = {
+      Economica: 0,
+      Ejecutiva: 0,
+      Primera: 0,
+    };
+
+    result.rows.forEach(row => {
+      const clase = row.class?.toLowerCase();
+      if (clase.includes('econ')) response.Economica += Number(row.count);
+      else if (clase.includes('ejec')) response.Ejecutiva += Number(row.count);
+      else if (clase.includes('prim')) response.Primera += Number(row.count);
+    });
+
+    res.json(response);
+  } catch (error) {
+    console.error('Error al obtener pasajeros por clase:', error);
+    res.status(500).send('Error en la consulta');
+  }
+};
+
+
+export const getPassengerCount = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT COUNT(*) AS total FROM passenger');
+    res.json({ total: parseInt(result.rows[0].total) });
+  } catch (error) {
+    console.error('Error al obtener el total de pasajeros:', error);
+    res.status(500).send('Error al obtener el total de pasajeros');
+  }
+};

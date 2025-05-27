@@ -1,9 +1,11 @@
 import express from 'express';
-import { getEmployees,getEmployeeById,addEmployee,deleteEmployee,updateEmployee, getEmployeesByJob } from '../controllers/employee.controller.js';
+import {getEmployeeSummary, getEmployees,getEmployeeById,addEmployee,deleteEmployee,updateEmployee, getEmployeesByJob } from '../controllers/employee.controller.js';
 import { checkRole }  from '../middlewares/checkRole.js';
 
 
 const router = express.Router();
+
+router.get('/dashboard/summary',checkRole(['administrator']),getEmployeeSummary); 
 
 router.get('/',getEmployees);
 router.get('/:job_id',getEmployeesByJob);

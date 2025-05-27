@@ -288,3 +288,52 @@ export const getFlightTotalsOverTime = async (req, res) => {
     res.status(500).send('Error al obtener totales de vuelos');
   }
 };
+
+//datos fianancieros de los vuelos
+export const getFinancialSummary = async (req, res) => {
+  const { range } = req.query;
+
+  let startDate = 'CURRENT_DATE';
+  if (range === 'week') {
+    startDate = "CURRENT_DATE - INTERVAL '7 days'";
+  } else if (range === 'month') {
+    startDate = "CURRENT_DATE - INTERVAL '1 month'";
+  }
+
+  try {
+    const incomeQuery = `
+      SELECT COALESCE(SUM(transaction_amount), 0)::int AS total_income
+      FROM payment
+      WHERE date >= ${startDate};
+    `;
+
+    const payrollQuery = `
+      SELECT COALESCE(SUM(net_salary), 0)::int AS employee_expenses
+      FROM payroll
+      WHERE date_issued >= ${startDate};
+    `;
+
+    const [incomeResult, payrollResult] = await Promise.all([
+      pool.query(incomeQuery),
+      pool.query(payrollQuery),
+    ]);
+
+    const total_income = incomeResult.rows[0].total_income;
+    const employee_expenses = payrollResult.rows[0].employee_expenses;
+
+    // 🔧 Combustible y mantenimiento simulado (puedes conectar a una tabla futura)
+    const maintenance_fuel_expenses = 500000;
+
+    const total_expenses = employee_expenses + maintenance_fuel_expenses;
+
+    res.json({
+      total_income,
+      total_expenses,
+      employee_expenses,
+      maintenance_fuel_expenses,
+    });
+  } catch (error) {
+    console.error('Error en getFinancialSummary:', error);
+    res.status(500).send('Error al obtener resumen financiero');
+  }
+};

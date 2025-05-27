@@ -9,6 +9,7 @@ router.get('/dashboard/kpis',verifyToken,checkRole(['administrator']), flightCon
 router.get('/dashboard/current-flights', verifyToken, checkRole(['administrator']), flightController.getCurrentFlightsStatus);
 router.get('/dashboard/flights-count',verifyToken,checkRole(['administrator']),flightController.getAllCountFlights);
 router.get('/dashboard/flights-over-time', verifyToken, checkRole(['administrator']), flightController.getFlightTotalsOverTime);
+router.get('/dashboard/financials', verifyToken, checkRole(['administrator']), flightController.getFinancialSummary);
 
 
 router.get('/search/flights',flightController.getFlightFull);

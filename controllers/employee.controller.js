@@ -89,3 +89,24 @@ export const getEmployeesByJob = async (req, res) => {
         res.status(500).send('Error al obtener empleados por puesto');
     }
 };
+
+
+//obtener empleados por su chamba que son 
+export const getEmployeeSummary = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        COUNT(*) AS total_employees,
+        COUNT(*) FILTER (WHERE LOWER(j.title) = 'piloto') AS pilots,
+        COUNT(*) FILTER (WHERE LOWER(j.title) = 'tripulante') AS crew,
+        COUNT(*) FILTER (WHERE LOWER(j.title) = 'personal de tierra') AS ground
+      FROM employee e
+      JOIN job j ON e.job_id = j.job_id;
+    `);
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error al obtener resumen de empleados:', error);
+    res.status(500).send('Error en la consulta');
+  }
+};
