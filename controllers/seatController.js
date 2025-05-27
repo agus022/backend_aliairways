@@ -154,6 +154,7 @@ export const getSeatsByFlight = async (req, res) => {
 };
 export const updateSeatsByReservation = async (req, res) => {
   try {
+    console.log("------------------------HOLA------------------------");
     const { reservation_id } = req.params;
     const {aircraft_id,seat_id} =req.body;
     const result = await pool.query(
