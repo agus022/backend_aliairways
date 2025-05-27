@@ -54,7 +54,7 @@ export const login = async (req, res) => {
             {
                 userId: user.user_id,
                 username: user.username,
-                isAdmin: user.role === 'admin',
+                isAdmin: user.role === 'administrator',
                 role: user.role
             },
             SECRET,
