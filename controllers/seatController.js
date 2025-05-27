@@ -11,9 +11,10 @@ export const getSeats = async (req, res) => {
     }
 }
 export const getSeatById = async (req, res) => {
+    console.log("HOLA");
     try {
         const { aircraft_id,id } = req.params;
-        const result = await pool.query('SELECT * FROM seat WHERE aircradt_id=$2 and seat_id = $1', [aircraft_id,id]);
+        const result = await pool.query('SELECT * FROM seat WHERE aircraft_id=$2 and seat_id = $1', [aircraft_id,id]);
         res.json(result.rows[0]);
     } catch (error) {
         console.error(error);
@@ -71,6 +72,7 @@ export const deleteSeat = async (req, res) => {
 
 //obtener todos los asientos por avion
 export const getSeatsByAircraft = async (req, res) => {
+  console.log("Aircraft",req.params.flight_id);
   try {
     const { aircraft_id } = req.params;
     const result = await pool.query(
@@ -132,5 +134,35 @@ export const getSeatsByClass = async (req, res) => {
     res.status(500).send('Error al obtener los asientos por clase');
   }
 };
-
-
+export const getSeatsByFlight = async (req, res) => {
+  console.log("BUSCANDO ASIENTOS");
+  try {
+    const { flight_id } = req.params;
+    console.log(flight_id);
+    const result = await pool.query(
+      `select s.aircraft_id,s.seat_id,s.class,s.position,s.cost,s.available
+  from flight f join aircraft a on f.aircraft_id=a.aircraft_id
+  join seat s on s.aircraft_id=a.aircraft_id
+  where flight_id=$1`,
+      [flight_id]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al obtener los asientos por clase');
+  }
+};
+export const updateSeatsByReservation = async (req, res) => {
+  try {
+    const { reservation_id } = req.params;
+    const {aircraft_id,seat_id} =req.body;
+    const result = await pool.query(
+      `update reservation set aircraft_id=$1, seat_id=$2 where reservation_id=$3;`,
+      [aircraft_id,seat_id,reservation_id]
+    );
+    res.json({ message: 'Asiento actualizado correctamente' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al obtener los asientos por clase');
+  }
+};
