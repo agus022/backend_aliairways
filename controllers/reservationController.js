@@ -1,5 +1,4 @@
-import pool from "../libs/db_connection";
-
+import pool from '../libs/db_connection.js';
 
 export const getAllReservations = async (req, res) => {
     try {
@@ -128,4 +127,41 @@ export const isSeatTaken = async (req, res) => {
     }
 };
 
+export const getReservationsByUser = async (req, res) => {
+    try{
+        const {user_id} = req.params;
+        const result = await pool.query(`select r.reservation_id,pa.transaction_amount as total,pa.payment_id, f.flight_id, pa.status, f.departure_time,f.arrival_time,
+       (select city from airport a where a.airport_id=f.destination_id) as cityDestination, (select a.code from airport a where a.airport_id=f.destination_id) as airportDestination, f.departure_time,
+       (select city from airport a where a.airport_id=f.origin_id) as cityOrigin, (select a.code from airport a where a.airport_id=f.origin_id) as airportOrigin, f.departure_time,
+       concat(p.last_name_paternal,' ',p.last_name_maternal) as last_name,
+    p.email
+    from user_reservation ur join reservation r on ur.reservation_id = r.reservation_id
+     join passenger p on p.passenger_id=r.passenger_id
+     join flight f on f.flight_id=r.payment_id
+    join payment pa on pa.payment_id=r.payment_id
+    where ur.user_id=$1;`, [user_id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "No se encontraron reservaciones para este usuario" });
+        }
+
+        res.json(result.rows);
+    }catch (error) {
+        console.error(error);
+        res.status(500).send("Error al obtener reservaciones del usuario");
+    }
+}
+export const cancelReservation = async (req, res) => {  
+    try {
+        const { id } = req.params;
+        const result = await pool.query(`
+update payment p set status='Cancelado' where  p.payment_id=  (select  pa.payment_id from payment pa join reservation r on r.payment_id=pa.payment_id
+                                                                where reservation_id=$1)`, [id]);
+
+        res.json({ message: 'Reservacion cancelada' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Error al cancelar la reservación");
+    }
+}
 
