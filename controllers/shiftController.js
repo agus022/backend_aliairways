@@ -91,5 +91,25 @@ export const getShiftsByDesc = async (req, res) => {
     }
   };
   
+
+  //Obtener el horario de un empleado por su idUser
+  export const getShiftByEmployee = async (req, res) => {
+    try {
+      const { id } = req.params;
   
+      const result = await pool.query(`select e.first_name,j.title,e.employee_id,s.start_time,s.end_time,s.shift_desc from employee e join shift s on s.shift_id=e.shift_id
+   join user_airways ua on ua.user_id=e.user_id
+    join job j on j.job_id=e.job_id
+   where ua.user_id=$1`, [id]);
+  
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: 'Turno no encontrado' });
+      }
+  
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error al obtener el turno');
+    }
+};
   
