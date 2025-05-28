@@ -21,7 +21,7 @@ router.get('/search/:origin/:destination', flightController.getFlightByOriginAnd
 // Employee
 router.get('/employee/flightsNow/:id',verifyToken,  checkRole(['administrator', 'employee']), flightController.getFlightByEmployeNow);
 router.get('/employee/flightsAfter/:id',verifyToken, checkRole(['employee']), flightController.getFlightByEmployePosterior);
-
+router.get('/employee/flightsBefore/:id',verifyToken, checkRole(['employee']), flightController.getFlightByEmployeAnteriores);
 // General
 router.get('/', flightController.getAllFlights);
 router.get('/:id', flightController.getFlightById);
