@@ -4,6 +4,8 @@ import { checkRole }  from '../middlewares/checkRole.js';
 
 
 const router=Router();
+router.post('/crear_reservacion',checkRole(['passenger','administrator']),reservationController.reservacionTransaccion);
+
 router.get('/',checkRole(['administrator','passenger','employee']),reservationController.getAllReservations);
 router.get('/verify-seat',reservationController.isSeatTaken);
 router.get('/:flight_id',reservationController.getPassagersByIdFlight);
