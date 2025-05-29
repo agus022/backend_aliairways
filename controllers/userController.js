@@ -81,6 +81,7 @@ export const getUsers = async (req,res) =>{
         res.status(500).send('Error en la consulta');
     }
 };
+
 export const getProfile =async (req,res)=>{
      
     try {
@@ -111,3 +112,64 @@ JOIN
         res.status(500).send('Error en la consulta');
     }
 }
+
+
+// OBTENER UN USUARIO POR ID
+export const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM user_airways WHERE user_id = $1', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al obtener el usuario');
+  }
+};
+
+// ACTUALIZAR USUARIO
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { username, email, phone, role_id } = req.body;
+
+    await pool.query(
+      `UPDATE user_airways SET username = $1, email = $2, phone = $3, role_id = $4 WHERE user_id = $5`,
+      [username, email, phone, role_id, id]
+    );
+
+    res.json({ message: 'Usuario actualizado correctamente' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al actualizar el usuario');
+  }
+};
+
+// ELIMINAR USUARIO
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await pool.query('DELETE FROM user_airways WHERE user_id = $1', [id]);
+    res.json({ message: 'Usuario eliminado correctamente' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al eliminar el usuario');
+  }
+};
+
+// BUSCAR USUARIOS POR CORREO
+export const searchUserByEmail = async (req, res) => {
+  try {
+    const { email } = req.query;
+    const result = await pool.query(
+      'SELECT * FROM user_airways WHERE LOWER(email) LIKE LOWER($1)',
+      [`%${email}%`]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al buscar usuarios por correo');
+  }
+};

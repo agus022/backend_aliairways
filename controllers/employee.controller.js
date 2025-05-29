@@ -97,9 +97,9 @@ export const getEmployeeSummary = async (req, res) => {
     const result = await pool.query(`
       SELECT
         COUNT(*) AS total_employees,
-        COUNT(*) FILTER (WHERE LOWER(j.title) = 'piloto') AS pilots,
-        COUNT(*) FILTER (WHERE LOWER(j.title) = 'tripulante') AS crew,
-        COUNT(*) FILTER (WHERE LOWER(j.title) = 'personal de tierra') AS ground
+        COUNT(*) FILTER (WHERE LOWER(j.title) = 'pilots') AS pilots,
+        COUNT(*) FILTER (WHERE LOWER(j.title) = 'crew') AS crew,
+        COUNT(*) FILTER (WHERE LOWER(j.title) = 'ground personnel') AS ground
       FROM employee e
       JOIN job j ON e.job_id = j.job_id;
     `);
@@ -108,5 +108,37 @@ export const getEmployeeSummary = async (req, res) => {
   } catch (error) {
     console.error('Error al obtener resumen de empleados:', error);
     res.status(500).send('Error en la consulta');
+  }
+};
+
+
+//asignar empleado a un vuelo
+export const assignEmployeeToFlight = async (req, res) => {
+  try {
+    const { flight_id, employee_id } = req.body;
+
+    if (!flight_id || !employee_id) {
+      return res.status(400).json({ message: 'Faltan datos requeridos.' });
+    }
+
+    // Verificar si ya existe la asignación
+    const check = await pool.query(
+      'SELECT * FROM flight_employee WHERE flight_id = $1 AND employee_id = $2',
+      [flight_id, employee_id]
+    );
+
+    if (check.rows.length > 0) {
+      return res.status(409).json({ message: 'El empleado ya está asignado a este vuelo.' });
+    }
+
+    await pool.query(
+      'INSERT INTO flight_employee (flight_id, employee_id) VALUES ($1, $2)',
+      [flight_id, employee_id]
+    );
+
+    res.status(201).json({ message: 'Empleado asignado correctamente al vuelo.' });
+  } catch (error) {
+    console.error('Error al asignar empleado:', error);
+    res.status(500).json({ message: 'Error interno del servidor.' });
   }
 };

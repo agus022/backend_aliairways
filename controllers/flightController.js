@@ -54,6 +54,39 @@ export const getAllFlights = async (req, res) => {
         res.status(500).send('Error en la consulta');
     }
 }
+
+//obtener vuelos con los valores enriqucidos para NO MOSTRAR el id , sino el nombre o el codigo 
+export const getEnrichedFlights = async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        f.flight_id,
+        f.departure_date,
+        f.arrival_date,
+        f.departure_time,
+        f.arrival_time,
+        ao.code AS departure_airport_code,
+        ad.code AS arrival_airport_code,
+        ac.model AS aircraft_model,
+        f.status,
+        f.cost,
+        f.location
+      FROM flight f
+      JOIN airport ao ON f.origin_id = ao.airport_id
+      JOIN airport ad ON f.destination_id = ad.airport_id
+      JOIN aircraft ac ON f.aircraft_id = ac.aircraft_id
+      ORDER BY f.flight_id ASC
+    `);
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al obtener vuelos enriquecidos');
+  }
+};
+
+
+
 export const getFlightByOriginAndDestination=async (req, res) => {
     try {
         const origin = req.params.origin || null;

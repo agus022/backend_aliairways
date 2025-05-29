@@ -74,5 +74,19 @@ export const getRolById = async (req, res) => {
     }
 };
   
-  
+export const searchRolesByName = async (req, res) => {
+  try {
+    const { name } = req.query;
+
+    const result = await pool.query(
+      'SELECT * FROM role WHERE LOWER(name) LIKE LOWER($1)',
+      [`%${name}%`]
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al buscar roles por nombre');
+  }
+};
   

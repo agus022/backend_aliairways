@@ -30,11 +30,11 @@ export const getAircraftById = async (req, res) => {
 
 export const createAircraft = async (req, res) => {
     try {
-        const { model, capacity, manufacturer, registration_code } = req.body;
+        const { model, capacity} = req.body;
 
         await pool.query(
-            'INSERT INTO aircraft (model, capacity, manufacturer, registration_code) VALUES ($1, $2, $3, $4)',
-            [model, capacity, manufacturer, registration_code]
+            'INSERT INTO aircraft (model, capacity) VALUES ($1, $2)',
+            [model, capacity]
         );
 
         res.status(201).json({ message: 'Avión creado correctamente' });
@@ -48,11 +48,11 @@ export const createAircraft = async (req, res) => {
 export const updateAircraft = async (req, res) => {
     try {
         const { id } = req.params;
-        const { model, capacity, manufacturer, registration_code } = req.body;
+        const { model, capacity} = req.body;
 
         const result = await pool.query(
-            'UPDATE aircraft SET model = $1, capacity = $2, manufacturer = $3, registration_code = $4 WHERE aircraft_id = $5',
-            [model, capacity, manufacturer, registration_code, id]
+            'UPDATE aircraft SET model = $1, capacity = $2 WHERE aircraft_id = $3',
+            [model, capacity, id]
         );
 
         if (result.rowCount === 0) {
@@ -87,7 +87,7 @@ export const deleteAircraft = async (req, res) => {
 // Buscar aviones por modelo
 export const searchAircraftByModel = async (req, res) => {
     try {
-        const { model } = req.query;
+        const { model } = req.params;
 
         const result = await pool.query(
             'SELECT * FROM aircraft WHERE LOWER(model) LIKE LOWER($1)',
