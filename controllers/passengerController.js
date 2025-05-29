@@ -51,15 +51,22 @@ export const deletePasanger = async (req, res) => {
 export const updatePassenger = async (req, res) => {
     try {
         const { id } = req.params;
-        const { first_name,last_name_maternal,last_name_paternal,birth_date,passport,phone,email,accumulated_flights,frecuent_flyer,user_id } = req.body;
+        const { first_name,last_name_maternal,last_name_paternal,birth_date,passport,phone,email,accumulated_flights,frecuent_flyer,user_id,photo } = req.body;
 
         await pool.query(
             `UPDATE passenger SET
                 first_name = $1, last_name_maternal = $2, last_name_paternal = $3,
                 birth_date = $4, passport = $5, phone = $6, email = $7,
                 accumulated_flights = $8, frequent_flyer = $9, user_id = $10
-            WHERE passenger_id = $11`,
+            WHERE passenger_id = $11;`
+            ,
             [first_name, last_name_maternal, last_name_paternal, birth_date, passport, phone, email, accumulated_flights, frecuent_flyer, user_id,id]
+        );
+
+        await pool.query(
+            `update user_airways set photo=$1 here user_id=$3;`
+            ,
+            [photo,id]
         );
 
         res.json({ message: 'Pasajero actualizado correctamente' });

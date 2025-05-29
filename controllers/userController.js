@@ -88,6 +88,7 @@ export const getProfile =async (req,res)=>{
         const result = await pool.query(`SELECT
   u.user_id,
   u.username,
+  u.photo,
   u.email AS user_email,
   u.phone AS user_phone,
   u.role_id,
@@ -104,7 +105,7 @@ export const getProfile =async (req,res)=>{
 FROM
   user_airways u
 JOIN
-  passenger p ON u.user_id =$1`,[id]);
+  passenger p ON u.user_id =$1 order by p.passenger_id`,[id]);
         res.json(result.rows);
     } catch (error) {
         console.error(error);

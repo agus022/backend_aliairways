@@ -18,6 +18,7 @@ import paymentsRoutes from './routers/paymentRoute.js'
 import checkInRoutes from './routers/checkinRoute.js';
 import reservationRoutes from './routers/reservationRoute.js';
 import payrollRoutes from './routers/payrollRoute.js'
+import bucketRoutes from './routers/bucketRoute.js';
 import cors from 'cors';
 
 
@@ -64,6 +65,7 @@ app.use(`${API_PREFIX}/payments`, paymentsRoutes);
 app.use(`${API_PREFIX}/checkins`,checkInRoutes);
 app.use(`${API_PREFIX}/reservations`,reservationRoutes)
 app.use(`${API_PREFIX}/payrolls`,payrollRoutes);
+app.use(`${API_PREFIX}/bucket`, bucketRoutes); 
 
 app.listen(3000, () => {
     console.log(`Server is running on http://localhost:${PORT}${API_PREFIX}`);
