@@ -370,3 +370,91 @@ export const getFinancialSummary = async (req, res) => {
     res.status(500).send('Error al obtener resumen financiero');
   }
 };
+
+
+///Obtener todos los vuelos de un empleado now
+
+export const getFlightByEmployeNow=async (req,res) =>{
+    const { id } = req.params;
+    try{
+        const result= await pool.query(
+            `
+            select f.flight_id,f.status,a.aircraft_id,
+          (select concat(ai.code,' ',ai.city)  from airport ai where ai.airport_id=f.origin_id) as origen,
+          (select concat(ai.code,' ',ai.city)  from airport ai where ai.airport_id=f.destination_id) as destino,
+          f.departure_date,f.departure_time,f.arrival_time,a.model,
+          (select count(*) from reservation r join checkIn c on r.reservation_id=c.reservation_id
+                            where r.flight_id=f.flight_id) as num_passanger
+        from flight f
+        join aircraft a on f.aircraft_id=a.aircraft_id
+        join flight_employee fe on fe.flight_id=f.flight_id
+        join employee e on e.employee_id=fe.employee_id
+        join user_airways ua on ua.user_id=e.user_id
+        where e.user_id=$1 and f.departure_date=current_date
+        order by f.departure_date,f.departure_time;
+                    `,
+        [id]
+        );
+        res.json(result.rows);
+    }catch(error){
+        console.error(error);
+        res.status(500).send('Error en la cosunta');
+    }
+}
+
+// Obtener todos los vuelos de un empleado despues de hoy
+export const getFlightByEmployePosterior=async (req,res) =>{
+    const { id } = req.params;
+    try{
+        const result= await pool.query(
+            `
+           select f.flight_id,f.status,a.aircraft_id,
+       (select concat(ai.code,' ',ai.city)  from airport ai where ai.airport_id=f.origin_id) as origen,
+       (select concat(ai.code,' ',ai.city)  from airport ai where ai.airport_id=f.destination_id) as destino,
+        f.departure_date,f.departure_time,f.arrival_time,a.model,
+       (select count(*) from reservation r join checkIn c on r.reservation_id=c.reservation_id
+                        where r.flight_id=f.flight_id) as num_passanger
+    from flight f
+    join aircraft a on f.aircraft_id=a.aircraft_id
+    join flight_employee fe on fe.flight_id=f.flight_id
+    join employee e on e.employee_id=fe.employee_id
+    join user_airways ua on ua.user_id=e.user_id
+    where e.user_id=$1 and f.departure_date>current_date
+    order by f.departure_date,f.departure_time;
+                    `,
+        [id]
+        );
+        res.json(result.rows);
+    }catch(error){
+        console.error(error);
+        res.status(500).send('Error en la cosunta');
+    }
+}
+export const getFlightByEmployeAnteriores=async (req,res) =>{
+    const { id } = req.params;
+    try{
+        const result= await pool.query(
+            `
+           select f.flight_id,f.status,a.aircraft_id,
+       (select concat(ai.code,' ',ai.city)  from airport ai where ai.airport_id=f.origin_id) as origen,
+       (select concat(ai.code,' ',ai.city)  from airport ai where ai.airport_id=f.destination_id) as destino,
+        f.departure_date,f.departure_time,f.arrival_time,a.model,
+       (select count(*) from reservation r join checkIn c on r.reservation_id=c.reservation_id
+                        where r.flight_id=f.flight_id) as num_passanger
+    from flight f
+    join aircraft a on f.aircraft_id=a.aircraft_id
+    join flight_employee fe on fe.flight_id=f.flight_id
+    join employee e on e.employee_id=fe.employee_id
+    join user_airways ua on ua.user_id=e.user_id
+    where e.user_id=$1 and f.departure_date<current_date
+    order by f.departure_date,f.departure_time;
+                    `,
+        [id]
+        );
+        res.json(result.rows);
+    }catch(error){
+        console.error(error);
+        res.status(500).send('Error en la cosunta');
+    }
+}
+

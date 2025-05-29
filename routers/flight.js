@@ -12,15 +12,25 @@ router.get('/dashboard/flights-over-time', verifyToken, checkRole(['administrato
 router.get('/dashboard/financials', verifyToken, checkRole(['administrator']), flightController.getFinancialSummary);
 
 
-router.get('/search/flights',flightController.getFlightFull);
+
+
 router.get('/enriched', flightController.getEnrichedFlights);
-router.get('/',flightController.getAllFlights);
+
+// Flight search
+router.get('/search/flights', flightController.getFlightFull);
+router.get('/search', flightController.getAllFlights);
 router.get('/search/:origin/:destination/:date', flightController.getFlightByOriginAndDestinationAndDate);
 router.get('/search/:origin/:destination', flightController.getFlightByOriginAndDestination);
-router.get('/search', flightController.getAllFlights);
-router.get('/:id',flightController.getFlightById);
-router.post('/',verifyToken,checkRole(['administrator']),flightController.createFlight);
-router.put('/:id',verifyToken,checkRole(['administrator']),flightController.updateFlight);
-router.delete('/:id',verifyToken,checkRole(['administrator']),flightController.deleteFlight);
+
+// Employee
+router.get('/employee/flightsNow/:id',verifyToken,  checkRole(['administrator', 'employee']), flightController.getFlightByEmployeNow);
+router.get('/employee/flightsAfter/:id',verifyToken, checkRole(['employee']), flightController.getFlightByEmployePosterior);
+router.get('/employee/flightsBefore/:id',verifyToken, checkRole(['employee']), flightController.getFlightByEmployeAnteriores);
+// General
+router.get('/', flightController.getAllFlights);
+router.get('/:id', flightController.getFlightById);
+router.post('/', checkRole(['administrator']), flightController.createFlight);
+router.put('/:id', checkRole(['administrator']), flightController.updateFlight);
+router.delete('/:id', checkRole(['administrator']), flightController.deleteFlight);
 
 export default router;

@@ -1,3 +1,4 @@
+
 import pool from '../libs/db_connection.js';
 
 export const getAllReservations = async (req, res) => {
@@ -164,4 +165,65 @@ update payment p set status='Cancelado' where  p.payment_id=  (select  pa.paymen
         res.status(500).send("Error al cancelar la reservación");
     }
 }
+export const reservacionTransaccion = async(req,res)=>{
+    const client =await pool.connect();
 
+    try{
+        //realizar insercion de pasajero
+        const {first_name,last_name_paternal,last_name_maternal,birth_date,passport,phone,email,accumulated_flight,frequent_flyer,user_id} =req.body;
+        //datos de empleado vuelo
+        const {flight_id}=req.body;
+        //datos de transaccion 
+        const {method,transaction_amount,status,date}=req.body
+        //datos de asiento
+
+        const {aircraft_id,seat_id}=req.body;
+        await client.query('BEGIN');
+
+        const insertPassenger=await client.query(`insert into passenger
+    (first_name,  last_name_paternal, last_name_maternal, birth_date, passport, phone, email, accumulated_flights, frequent_flyer, user_id) 
+    values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING passenger_id;;`,
+            [first_name,last_name_paternal,last_name_maternal,birth_date,passport,phone,email,accumulated_flight,frequent_flyer,user_id]);
+
+        const passengerId=insertPassenger.rows[0].passenger_id;
+
+        const insertPayment=await client.query(`insert into payment
+   (method, transaction_amount, status, date) 
+    values ($1,$2,$3,$4) RETURNING payment_id;`,[method,transaction_amount,status,date]); 
+
+        const paymentId=insertPayment.rows[0].payment_id;
+
+        const insertReservation=await client.query(`insert into reservation
+ (flight_id, aircraft_id, seat_id, passenger_id, payment_id) 
+  values ($1,$2,$3,$4,$5) RETURNING reservation_id;`,[flight_id,aircraft_id,seat_id,passengerId,paymentId]);
+        
+        const reservationId=insertReservation.rows[0].reservation_id;
+
+        await client.query(`
+            insert into user_reservation 
+                (date, user_id, reservation_id) 
+                values ($1,$2,$3);
+        `,[date,user_id,reservationId]);
+
+        await client.query('COMMIT');
+        console.log('Transacción completada correctamente');
+
+        res.status(201).json({
+            message: 'Reservación creada exitosamente',
+            passengerId,
+            paymentId,
+            reservationId,
+        });
+    }catch(error){
+        await client.query('ROLLBACK');
+        console.error('Error en la transacción, deshaciendo cambios',error);
+        res.status(500).json({
+            error: 'Ocurrió un error al procesar la reservación',
+            details: error.message,
+        });
+    } finally{
+        client.release();
+        
+    }
+
+}
