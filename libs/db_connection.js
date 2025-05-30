@@ -1,13 +1,18 @@
-// CONEXION A LA BASE DE DATOS
+// db_connection.js
 import pkg from 'pg';
-import dotenv from 'dotenv';
+import config from './config.js';
 
-dotenv.config();
 const { Pool } = pkg;
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: false, 
+  host: config.APP_DB_HOST,
+  user: config.APP_DB_USER,
+  password: config.APP_DB_PASSWORD,
+  database: config.APP_DB_NAME,
+  port: config.APP_DB_PORT || 5432,
+  ssl: {
+    rejectUnauthorized: false // Si estás en RDS y usas SSL sin verificación estricta
+  }
 });
 
 export default pool;
