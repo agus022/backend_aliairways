@@ -35,7 +35,7 @@ export const getFlightFull=async (req,res) =>{
         JOIN airport ao ON f.origin_id = ao.airport_id
         JOIN airport ad ON f.destination_id = ad.airport_id
         JOIN aircraft ac ON f.aircraft_id = ac.aircraft_id
-        WHERE ao.city = $1 AND ad.city = $2 AND f.departure_date = $3;
+        WHERE ao.city = $1 AND ad.city = $2 AND f.departure_date = $3 AND f.status ILIKE '%pendiente%';
         `,
     [origin, destination,departureDate]
     );
