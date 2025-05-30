@@ -1,6 +1,6 @@
 // db_connection.js
 import pkg from 'pg';
-const config =require( '../config/config.js');
+import config from '../config/config.js';
 
 const { Pool } = pkg;
 

@@ -1,15 +1,16 @@
-// config.js
+// config.js (versión ES Module)
+
+import AWS from 'aws-sdk';
 
 let config = {
   APP_DB_HOST: "",
   APP_DB_USER: "",
   APP_DB_PASSWORD: "",
   APP_DB_NAME: "",
-  APP_DB_PORT: "5432" // puerto por defecto de PostgreSQL
+  APP_DB_PORT: "5432"
 };
 
-var AWS = require('aws-sdk');
-var client = new AWS.SecretsManager({
+const client = new AWS.SecretsManager({
   region: "us-east-1"
 });
 
@@ -17,7 +18,6 @@ const secretName = "Mydbsecret";
 
 client.getSecretValue({ SecretId: secretName }, function (err, data) {
   if (err) {
-    // fallback a variables de entorno
     config.APP_DB_HOST = process.env.APP_DB_HOST;
     config.APP_DB_NAME = process.env.APP_DB_NAME;
     config.APP_DB_PASSWORD = process.env.APP_DB_PASSWORD;
@@ -53,4 +53,4 @@ Object.keys(config).forEach(key => {
   }
 });
 
-module.exports = config;
+export default config;
