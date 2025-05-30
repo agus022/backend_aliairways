@@ -20,7 +20,10 @@ import reservationRoutes from './routers/reservationRoute.js';
 import payrollRoutes from './routers/payrollRoute.js'
 import bucketRoutes from './routers/bucketRoute.js';
 import cors from 'cors';
+import pool from './libs/db_connection.js';
 
+const result = await pool.query('SELECT NOW()');
+console.log('Hora actual de PostgreSQL:', result.rows[0]);
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;

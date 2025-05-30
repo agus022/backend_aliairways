@@ -1,5 +1,6 @@
 import { expressjwt as jwt } from 'express-jwt';
 
+
 function authJwt() {
     const secret = process.env.SECRET;
     const api = process.env.API_PREFIX;
@@ -12,7 +13,7 @@ function authJwt() {
         path: [
             { url: /\/api\/v1\/flights\/(.*)/, methods: ['GET'] },
             { url: /\/api\/v1\/airports\/(.*)/, methods: ['GET'] },
-            `${api}/airports`,
+            `${api}`,
             `${api}/airports/:id`,
             `${api}/users/login`,
             `${api}/users/register`
