@@ -1,27 +1,13 @@
-// db_connection.js
+// CONEXION A LA BASE DE DATOS
 import pkg from 'pg';
-import config from '../config/config.js';
+import dotenv from 'dotenv';
 
+dotenv.config();
 const { Pool } = pkg;
 
 const pool = new Pool({
-  host: config.APP_DB_HOST,
-  user: config.APP_DB_USER,
-  password: config.APP_DB_PASSWORD,
-  database: config.APP_DB_NAME,
-  port: config.APP_DB_PORT || 5432,
-  ssl: {
-    rejectUnauthorized: false // Si estás en RDS y usas SSL sin verificación estricta
-  }
+  connectionString: process.env.DATABASE_URL,
+  ssl: false, 
 });
-
-pool.connect()
-  .then(client => {
-    console.log('✅ Conexión a PostgreSQL exitosa');
-    client.release();
-  })
-  .catch(err => {
-    console.error('❌ Error al conectar a PostgreSQL:', err.message);
-  });
 
 export default pool;
