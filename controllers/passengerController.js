@@ -239,9 +239,12 @@ export const getPassengerStats = async (req, res) => {
 export const getPassengerCountByClass = async (req, res) => {
   const { range } = req.query;
 
-  let startDate = "CURRENT_DATE";
-  if (range === "week") startDate = "CURRENT_DATE - INTERVAL '7 days'";
-  else if (range === "month") startDate = "CURRENT_DATE - INTERVAL '1 month'";
+  let dateFilter = "CURRENT_DATE";
+  if (range === "week") {
+    dateFilter = "CURRENT_DATE - INTERVAL '7 days'";
+  } else if (range === "month") {
+    dateFilter = "CURRENT_DATE - INTERVAL '1 month'";
+  }
 
   try {
     const result = await pool.query(`
@@ -249,21 +252,21 @@ export const getPassengerCountByClass = async (req, res) => {
       FROM reservation r
       JOIN flight f ON r.flight_id = f.flight_id
       JOIN seat s ON r.seat_id = s.seat_id AND f.aircraft_id = s.aircraft_id
-      WHERE f.departure_date >= ${startDate}
+      WHERE f.departure_date >= ${dateFilter}
       GROUP BY s.class
     `);
 
     const response = {
-      Economica: 0,
-      Ejecutiva: 0,
-      Primera: 0,
+      economy: 0,
+      premium: 0,
+      first: 0,
     };
 
     result.rows.forEach(row => {
       const clase = row.class?.toLowerCase();
-      if (clase.includes('econ')) response.Economica += Number(row.count);
-      else if (clase.includes('ejec')) response.Ejecutiva += Number(row.count);
-      else if (clase.includes('prim')) response.Primera += Number(row.count);
+      if (clase === 'economy') response.economy += Number(row.count);
+      else if (clase === 'premium') response.premium += Number(row.count);
+      else if (clase === 'first') response.first += Number(row.count);
     });
 
     res.json(response);
@@ -272,6 +275,7 @@ export const getPassengerCountByClass = async (req, res) => {
     res.status(500).send('Error en la consulta');
   }
 };
+
 
 
 export const getPassengerCount = async (req, res) => {

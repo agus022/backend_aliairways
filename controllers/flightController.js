@@ -355,7 +355,7 @@ export const getFinancialSummary = async (req, res) => {
     const employee_expenses = payrollResult.rows[0].employee_expenses;
 
     // 🔧 Combustible y mantenimiento simulado (puedes conectar a una tabla futura)
-    const maintenance_fuel_expenses = 500000;
+    const maintenance_fuel_expenses = 20000;
 
     const total_expenses = employee_expenses + maintenance_fuel_expenses;
 
